@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package agendamento;
+
+option java_multiple_files = true;
+option java_package = "com.posfiap.agendamento";
+
+enum AgendamentoStatusProto {
+  AGENDADO = 0;
+  COMPARECEU = 1;
+  CANCELADO = 2;
+}
+
+message AgendamentoProto {
+  int64 agendamento_id = 1;
+  int64 paciente_id = 2;
+  int64 medico_id = 3;
+  string data_agendamento = 4;
+  AgendamentoStatusProto agendamento_status = 5;
+}
+
+message CreateAgendamentoRequest {
+  int64 paciente_id = 1;
+  int64 medico_id = 2;
+  string data_agendamento = 3;
+}
+
+message CreateAgendamentoResponse {
+  int64 agendamento_id = 1;
+  string message = 2;
+}
+
+message GetAgendamentoByIdRequest {
+  int64 agendamento_id = 1;
+}
+
+message GetAgendamentoByIdResponse {
+  AgendamentoProto agendamento = 1;
+}
+
+message UpdateDataAgendamentoRequest {
+  int64 agendamento_id = 1;
+  string data_agendamento = 2;
+}
+
+message UpdateDataAgendamentoResponse {
+  string message = 1;
+}
+
+message CompleteAgendamentoRequest {
+  int64 agendamento_id = 1;
+}
+
+message CompleteAgendamentoResponse {
+  string message = 1;
+}
+
+message CancelAgendamentoRequest {
+  int64 agendamento_id = 1;
+}
+
+message CancelAgendamentoResponse {
+  string message = 1;
+}
+
+message GetListAgendamentoByPacienteIdRequest {
+  int64 paciente_id = 1;
+}
+
+message GetListAgendamentoByPacienteIdResponse {
+  repeated AgendamentoProto agendamento = 1;
+}
+
+message GetListAgendamentoByMedicoIdRequest {
+  int64 medico_id = 1;
+}
+
+message GetListAgendamentoByMedicoIdResponse {
+  repeated AgendamentoProto agendamento = 1;
+}
+
+service AgendamentoService {
+  rpc CreateAgendamento(CreateAgendamentoRequest) returns (CreateAgendamentoResponse);
+  rpc UpdateDataAgendamento(UpdateDataAgendamentoRequest) returns (UpdateDataAgendamentoResponse);
+  rpc GetAgendamentoById(GetAgendamentoByIdRequest) returns (GetAgendamentoByIdResponse);
+  rpc CompleteAgendamento(CompleteAgendamentoRequest) returns (CompleteAgendamentoResponse);
+  rpc CancelAgendamento(CancelAgendamentoRequest) returns (CancelAgendamentoResponse);
+  rpc GetListAgendamentoByPacienteId(GetListAgendamentoByPacienteIdRequest) returns (GetListAgendamentoByPacienteIdResponse);
+  rpc GetListAgendamentoByMedicoId(GetListAgendamentoByMedicoIdRequest) returns (GetListAgendamentoByMedicoIdResponse);
+}

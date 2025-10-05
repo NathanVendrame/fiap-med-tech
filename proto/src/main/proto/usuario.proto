@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package usuario;
+
+option java_multiple_files = true;
+option java_package = "com.posfiap.usuario";
+
+enum TipoUsuario {
+  PACIENTE = 0;
+  MEDICO = 1;
+  ENFERMEIRO = 2;
+}
+
+message UsuarioProto {
+  int64 usuario_id = 1;
+  string nome = 2;
+  string cpf = 3;
+  string email = 4;
+  string senha = 5;
+  string telefone = 6;
+  TipoUsuario tipo_usuario = 7;
+}
+
+message CreateUsuarioRequest {
+  string nome = 1;
+  string cpf = 2;
+  string email = 3;
+  string senha = 4;
+  string telefone = 5;
+  TipoUsuario tipo_usuario = 6;
+}
+
+message CreateUsuarioResponse {
+  int64 usuario_id = 1;
+  string message = 2;
+}
+
+message GetUsuarioByIdRequest {
+  int64 usuario_id = 1;
+}
+
+message GetUsuarioByIdResponse {
+  UsuarioProto usuario = 1;
+}
+
+message ListUsuarioRequest {}
+
+message ListUsuarioResponse {
+  repeated UsuarioProto usuario = 1;
+}
+
+service UsuarioService {
+  rpc CreateUsuario(CreateUsuarioRequest) returns (CreateUsuarioResponse);
+  rpc ListUsuario(ListUsuarioRequest) returns (ListUsuarioResponse);
+  rpc GetUsuarioById(GetUsuarioByIdRequest) returns (GetUsuarioByIdResponse);
+}

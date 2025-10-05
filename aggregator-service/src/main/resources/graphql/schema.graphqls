@@ -1,0 +1,87 @@
+enum TipoUsuario {
+    PACIENTE
+    MEDICO
+    ENFERMEIRO
+}
+
+enum AgendamentoStatus {
+    AGENDADO
+    COMPARECEU
+    CANCELADO
+}
+
+type Usuario {
+    usuarioId: ID!
+    nome: String!
+    cpf: String!
+    email: String!
+    senha: String!
+    telefone: String!
+    tipoUsuario: TipoUsuario!
+}
+
+type Agendamento {
+    agendamentoId: ID!
+    pacienteId: ID!
+    medicoId: ID!
+    dataAgendamento: String!
+    agendamentoStatus: AgendamentoStatus!
+}
+
+type CreateUsuarioResponse {
+    usuarioId: ID!
+    message: String!
+}
+
+type CreateAgendamentoResponse {
+    agendamentoId: ID!
+    message: String!
+}
+
+type UpdateDataAgendamentoResponse {
+    message: String!
+}
+
+type CompleteAgendamentoResponse {
+    message: String!
+}
+
+type CancelAgendamentoResponse {
+    message: String!
+}
+
+input UsuarioInput {
+    nome: String!
+    cpf: String!
+    email: String!
+    senha: String!
+    telefone: String!
+    tipoUsuario: TipoUsuario!
+}
+
+input AgendamentoInput {
+    pacienteId: ID!
+    medicoId: ID!
+    dataAgendamento: String!
+}
+
+input DataAgendamentoInput {
+    agendamentoId: ID!
+    dataAgendamento: String!
+}
+
+extend type Query {
+    listUsuario: [Usuario!]!
+    getUsuarioById(id: ID!): Usuario
+    getAgendamentoById(agendamentoId: ID!): Agendamento
+    getListAgendamentoByPacienteId(pacienteId: ID!): [Agendamento!]!
+    getListAgendamentoByMedicoId(medicoId: ID!): [Agendamento!]!
+}
+
+extend type Mutation {
+    createUsuario(usuario: UsuarioInput!): CreateUsuarioResponse!
+    createAgendamento(agendamento: AgendamentoInput!): CreateAgendamentoResponse!
+    updateDataAgendamento(dataAgendamento: DataAgendamentoInput!): UpdateDataAgendamentoResponse!
+    completeAgendamento(agendamentoId: ID!): CompleteAgendamentoResponse!
+    cancelAgendamento(agendamentoId: ID!): CancelAgendamentoResponse!
+}
