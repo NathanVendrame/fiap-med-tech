@@ -6,6 +6,7 @@ import com.posfiap.repository.UsuarioRepository;
 import com.posfiap.usuario.*;
 import com.posfiap.utils.EntityMessageMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -29,7 +30,9 @@ public class UsuarioRequestHandler {
     }
 
     public CreateUsuarioResponse createUsuario(CreateUsuarioRequest createUsuarioRequest) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Usuario usuario = EntityMessageMapper.toEntity(createUsuarioRequest);
+        usuario.setSenha(encoder.encode(usuario.getSenha()));
         return EntityMessageMapper.toCreateUsuarioResponse(
                 usuarioRepository.save(usuario));
     }
