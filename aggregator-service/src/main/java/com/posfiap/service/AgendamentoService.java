@@ -2,6 +2,12 @@ package com.posfiap.service;
 
 import com.posfiap.agendamento.*;
 import com.posfiap.dto.*;
+import com.posfiap.exception.UsuarioInformadoNaoMedicoException;
+import com.posfiap.exception.UsuarioInformadoNaoPacienteException;
+import com.posfiap.usuario.GetUsuarioByIdRequest;
+import com.posfiap.usuario.GetUsuarioByIdResponse;
+import com.posfiap.usuario.TipoUsuario;
+import com.posfiap.usuario.UsuarioServiceGrpc;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +19,20 @@ public class AgendamentoService {
     @GrpcClient("grpc-agendamento")
     private AgendamentoServiceGrpc.AgendamentoServiceBlockingStub agendamentoServiceBlockingStub;
 
+    @GrpcClient("grpc-usuario")
+    private UsuarioServiceGrpc.UsuarioServiceBlockingStub usuarioServiceBlockingStub;
+
     public CreateAgendamentoResponseDTO createAgendamento(AgendamentoDTO agendamentoDTO) {
+        UsuarioDTO paciente = getUsuarioById(agendamentoDTO.getPacienteId());
+        if (!paciente.getTipoUsuario().equals(TipoUsuario.PACIENTE.name())) {
+            throw new UsuarioInformadoNaoPacienteException(agendamentoDTO.getPacienteId());
+        }
+
+        UsuarioDTO medico = getUsuarioById(agendamentoDTO.getMedicoId());
+        if (!medico.getTipoUsuario().equals(TipoUsuario.MEDICO.name())) {
+            throw new UsuarioInformadoNaoMedicoException(agendamentoDTO.getPacienteId());
+        }
+
         CreateAgendamentoRequest request = CreateAgendamentoRequest.newBuilder()
                 .setPacienteId(agendamentoDTO.getPacienteId())
                 .setMedicoId(agendamentoDTO.getMedicoId())
@@ -81,5 +100,13 @@ public class AgendamentoService {
         return response.getAgendamentoList().stream().map(AgendamentoDTO::new).toList();
     }
 
+    private UsuarioDTO getUsuarioById(Long usuarioId) {
+        GetUsuarioByIdRequest request = GetUsuarioByIdRequest.newBuilder()
+                .setUsuarioId(usuarioId)
+                .build();
+        GetUsuarioByIdResponse response = usuarioServiceBlockingStub.getUsuarioById(request);
+
+        return new UsuarioDTO(response.getUsuario());
+    }
 
 }
