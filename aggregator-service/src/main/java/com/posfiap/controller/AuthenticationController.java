@@ -20,7 +20,7 @@ public class AuthenticationController {
     }
 
     @MutationMapping
-    public AuthPayload login(@Argument LoginInput input) {
+    public AuthPayload login(@Argument("input") LoginInput input) {
         var vReq = ValidateLoginRequest.newBuilder()
                 .setEmail(input.email())
                 .setSenha(input.senha())
@@ -37,7 +37,7 @@ public class AuthenticationController {
     }
 
     @MutationMapping // Substitui @PostMapping("/register")
-    public RegisterPayload register(@Argument RegisterInput input) {
+    public RegisterPayload register(@Argument("input") RegisterInput input) {
         var req = CreateUsuarioRequest.newBuilder()
                 .setNome(input.nome())
                 .setCpf(input.cpf())

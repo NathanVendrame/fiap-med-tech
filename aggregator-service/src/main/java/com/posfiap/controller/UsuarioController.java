@@ -20,17 +20,19 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @QueryMapping
+    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
     public UsuarioDTO getUsuarioById(@Argument Long id) {
         return usuarioService.getUsuarioById(id);
     }
 
-    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     @QueryMapping
+    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
     public List<UsuarioDTO> listUsuario() {
         return usuarioService.listUsuario();
     }
 
     @MutationMapping
+    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
     public CreateUsuarioResponseDTO createUsuario(@Argument UsuarioDTO usuario) {
         return usuarioService.createUsuario(usuario);
     }
