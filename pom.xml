@@ -21,6 +21,8 @@
         <module>grpc-usuario</module>
         <module>grpc-agendamento</module>
         <module>aggregator-service</module>
+        <module>kafka-consumer</module>
+        <module>kafka-producer</module>
     </modules>
 
     <properties>

@@ -1,20 +1,10 @@
 services:
-  build-all:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: build-all
-    command: "true"
-    networks:
-      - app-network
-
   grpc-usuario:
     build:
       context: .
-      dockerfile: grpc-usuario/Dockerfile
+      dockerfile: Dockerfile
+      target: grpc-usuario
     container_name: grpc-usuario
-    depends_on:
-      - build-all
     ports:
       - "9090:9090"
     environment:
@@ -27,10 +17,9 @@ services:
   grpc-agendamento:
     build:
       context: .
-      dockerfile: grpc-agendamento/Dockerfile
+      dockerfile: Dockerfile
+      target: grpc-agendamento
     container_name: grpc-agendamento
-    depends_on:
-      - build-all
     ports:
       - "6565:6565"
     environment:
@@ -43,7 +32,8 @@ services:
   aggregator-service:
     build:
       context: .
-      dockerfile: aggregator-service/Dockerfile
+      dockerfile: Dockerfile
+      target: aggregator-service
     container_name: aggregator-service
     depends_on:
       - grpc-usuario
@@ -63,10 +53,10 @@ services:
   kafka-producer:
     build:
       context: .
-      dockerfile: kafka-producer/Dockerfile
+      dockerfile: Dockerfile
+      target: kafka-producer
     container_name: kafka-producer
     depends_on:
-      - build-all
       - kafka
     ports:
       - "8082:8082"
@@ -84,10 +74,10 @@ services:
   kafka-consumer:
     build:
       context: .
-      dockerfile: kafka-consumer/Dockerfile
+      dockerfile: Dockerfile
+      target: kafka-consumer
     container_name: kafka-consumer
     depends_on:
-      - build-all
       - kafka
     ports:
       - "8085:8085"
