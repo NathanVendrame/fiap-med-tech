@@ -70,6 +70,35 @@ input DataAgendamentoInput {
     dataAgendamento: String!
 }
 
+type AuthPayload {
+  token: String!
+  usuarioId: ID!
+  role: String!
+  expiresIn: Int!
+}
+
+input LoginInput {
+  email: String!
+  senha: String!
+}
+
+input RegisterInput {
+  nome: String!
+  cpf: String!
+  email: String!
+  senha: String!
+  telefone: String!
+  tipoUsuario: TipoUsuario!
+}
+
+type RegisterPayload {
+  usuarioId: ID!
+  message: String!
+  token: String
+  role: String
+  expiresIn: Int
+}
+
 extend type Query {
     listUsuario: [Usuario!]!
     getUsuarioById(id: ID!): Usuario
@@ -84,4 +113,6 @@ extend type Mutation {
     updateDataAgendamento(dataAgendamento: DataAgendamentoInput!): UpdateDataAgendamentoResponse!
     completeAgendamento(agendamentoId: ID!): CompleteAgendamentoResponse!
     cancelAgendamento(agendamentoId: ID!): CancelAgendamentoResponse!
+    login(input: LoginInput!): AuthPayload!
+    register(input: RegisterInput!): RegisterPayload!
 }

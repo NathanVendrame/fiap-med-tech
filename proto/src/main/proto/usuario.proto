@@ -49,8 +49,16 @@ message ListUsuarioResponse {
   repeated UsuarioProto usuario = 1;
 }
 
+message ValidateLoginRequest { string email = 1; string senha = 2; }
+message ValidateLoginResponse {
+  bool valido = 1;
+  UsuarioProto usuario = 2;
+  string message = 3;
+}
+
 service UsuarioService {
   rpc CreateUsuario(CreateUsuarioRequest) returns (CreateUsuarioResponse);
   rpc ListUsuario(ListUsuarioRequest) returns (ListUsuarioResponse);
   rpc GetUsuarioById(GetUsuarioByIdRequest) returns (GetUsuarioByIdResponse);
+  rpc ValidateLogin(ValidateLoginRequest) returns (ValidateLoginResponse);
 }

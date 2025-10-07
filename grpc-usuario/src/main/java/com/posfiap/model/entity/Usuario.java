@@ -1,16 +1,20 @@
 package com.posfiap.model.entity;
 
 import com.posfiap.model.enums.TipoUsuarioEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Table(
+        name = "usuario",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "email"),
+                @UniqueConstraint(columnNames = "cpf")
+        }
+)
 public class Usuario {
 
     @Id
@@ -19,14 +23,16 @@ public class Usuario {
 
     private String nome;
 
-    private String cpf;
-
+    @Column(nullable = false, unique = true)
     private String email;
 
-    private String senha;
+    @Column(nullable = false, unique = true)
+    private String cpf;
 
+    private String senha;
     private String telefone;
 
+    @Enumerated(EnumType.STRING)
     private TipoUsuarioEnum tipoUsuario;
 
     public Usuario() {}
