@@ -1,13 +1,13 @@
 package com.posfiap.controller;
 
 import com.posfiap.security.JwtUtils;
-import com.posfiap.usuario.*; // stubs gerados do proto
+import com.posfiap.usuario.*;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
-@RestController
-@RequestMapping("/auth")
+@Controller
 public class AuthenticationController {
 
     @GrpcClient("grpc-usuario")
@@ -15,41 +15,47 @@ public class AuthenticationController {
 
     private final JwtUtils jwt;
 
-    public AuthenticationController(JwtUtils jwt) { this.jwt = jwt; }
-
-    @PostMapping("/register")
-    public Map<String, Object> register(@RequestBody Map<String, String> body) {
-        var req = CreateUsuarioRequest.newBuilder()
-                .setNome(body.get("nome"))
-                .setCpf(body.get("cpf"))
-                .setEmail(body.get("email"))
-                .setSenha(body.get("senha"))
-                .setTelefone(body.get("telefone"))
-                .setTipoUsuario(TipoUsuario.valueOf(body.get("tipoUsuario")))
-                .build();
-        var resp = usuarioStub.createUsuario(req);
-        return Map.of("usuarioId", resp.getUsuarioId(), "message", resp.getMessage());
+    public AuthenticationController(JwtUtils jwt) {
+        this.jwt = jwt;
     }
 
-    @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
+    @MutationMapping
+    public AuthPayload login(@Argument LoginInput input) {
         var vReq = ValidateLoginRequest.newBuilder()
-                .setEmail(body.get("email"))
-                .setSenha(body.get("senha"))
+                .setEmail(input.email())
+                .setSenha(input.senha())
                 .build();
-        var vResp = usuarioStub.validateLogin(vReq);
 
+        var vResp = usuarioStub.validateLogin(vReq);
         if (!vResp.getValido()) {
             throw new RuntimeException("Credenciais inválidas");
         }
 
         var u = vResp.getUsuario();
-        String token = jwt.generateToken(u.getUsuarioId(), u.getEmail(), u.getTipoUsuario().name());
-        return Map.of(
-                "token", token,
-                "usuarioId", u.getUsuarioId(),
-                "role", u.getTipoUsuario().name(),
-                "expiresIn", 86400
-        );
+        String token = jwt.generateToken(Long.valueOf(u.getUsuarioId()), u.getEmail(), u.getTipoUsuario().name());
+        return new AuthPayload(token, u.getUsuarioId(), u.getTipoUsuario().name(), 86400);
     }
+
+    @MutationMapping // Substitui @PostMapping("/register")
+    public RegisterPayload register(@Argument RegisterInput input) {
+        var req = CreateUsuarioRequest.newBuilder()
+                .setNome(input.nome())
+                .setCpf(input.cpf())
+                .setEmail(input.email())
+                .setSenha(input.senha())
+                .setTelefone(input.telefone())
+                .setTipoUsuario(TipoUsuario.valueOf(input.tipoUsuario().name()))
+                .build();
+
+        var resp = usuarioStub.createUsuario(req);
+        var token = jwt.generateToken(resp.getUsuarioId(), input.email(), input.tipoUsuario().name());
+
+        return new RegisterPayload(resp.getUsuarioId(), resp.getMessage(), token, input.tipoUsuario().name(), 86400);
+    }
+
+    // === Types ===
+    public record LoginInput(String email, String senha) {}
+    public record AuthPayload(String token, Long usuarioId, String role, Integer expiresIn) {}
+    public record RegisterInput(String nome, String cpf, String email, String senha, String telefone, TipoUsuario tipoUsuario) {}
+    public record RegisterPayload(Long usuarioId, String message, String token, String role, Integer expiresIn) {}
 }

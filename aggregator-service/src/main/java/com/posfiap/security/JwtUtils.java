@@ -2,29 +2,47 @@ package com.posfiap.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Component;
-import java.security.Key;
+
+import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 @Component
 public class JwtUtils {
-    private static final String SECRET = "b1bH7kG8p9Tq2rS5u7v9x!A%D*F-J@NcRfUjXnZr4u7x!A%D*F-J@NcRfUjXnZr";
-    private static final long EXP_MS = 24 * 60 * 60 * 1000;
 
-    private Key key() { return Keys.hmacShaKeyFor(SECRET.getBytes()); }
+    // use uma chave >= 256 bits (32+ chars). Configure pelo application.properties
+    private final SecretKey key;
+    private final long expirationMillis;
+
+    public JwtUtils(
+            @Value("${security.jwt.secret}") String secret,
+            @Value("${security.jwt.expiration:86400000}") long expirationMillis // 24h
+    ) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMillis = expirationMillis;
+    }
 
     public String generateToken(Long userId, String email, String role) {
+        Instant now = Instant.now();
         return Jwts.builder()
                 .setSubject(email)
-                .addClaims(Map.of("uid", userId, "role", role))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXP_MS))
-                .signWith(key(), SignatureAlgorithm.HS256)
+                .claim("uid", userId)
+                .claim("role", role) // PACIENTE/MEDICO/ENFERMEIRO
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plusMillis(expirationMillis)))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public Jws<Claims> parse(String token) {
-        return Jwts.parserBuilder().setSigningKey(key()).build().parseClaimsJws(token);
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+    }
+
+    public Map<String, Object> claims(String token) {
+        return parse(token).getBody();
     }
 }
