@@ -1,0 +1,79 @@
+services:
+  # ----------------------------
+  # Build global (gera todos os .jar)
+  # ----------------------------
+  build-all:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: build-all
+    command: "true"
+    networks:
+      - app-network
+
+  # ----------------------------
+  # Serviço gRPC - Usuário
+  # ----------------------------
+  grpc-usuario:
+    build:
+      context: .
+      dockerfile: grpc-usuario/Dockerfile
+    container_name: grpc-usuario
+    depends_on:
+      - build-all
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_APPLICATION_NAME=grpc-usuario
+      - GRPC_USUARIO_PORT=9090
+      - SERVER_PORT=9090
+    networks:
+      - app-network
+
+  # ----------------------------
+  # Serviço gRPC - Agendamento
+  # ----------------------------
+  grpc-agendamento:
+    build:
+      context: .
+      dockerfile: grpc-agendamento/Dockerfile
+    container_name: grpc-agendamento
+    depends_on:
+      - build-all
+    ports:
+      - "6565:6565"
+    environment:
+      - SPRING_APPLICATION_NAME=grpc-agendamento
+      - GRPC_AGENDAMENTO_PORT=6565
+      - SERVER_PORT=6565
+    networks:
+      - app-network
+
+  # ----------------------------
+  # Serviço GraphQL - Aggregator
+  # ----------------------------
+  aggregator-service:
+    build:
+      context: .
+      dockerfile: aggregator-service/Dockerfile
+    container_name: aggregator-service
+    depends_on:
+      - grpc-usuario
+      - grpc-agendamento
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_APPLICATION_NAME=aggregator-service
+      - SERVER_PORT=8080
+
+      # Variáveis de conexão para os serviços gRPC
+      - GRPC_AGENDAMENTO_HOST=grpc-agendamento
+      - GRPC_AGENDAMENTO_PORT=6565
+      - GRPC_USUARIO_HOST=grpc-usuario
+      - GRPC_USUARIO_PORT=9090
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
