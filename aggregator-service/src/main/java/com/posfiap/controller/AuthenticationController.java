@@ -2,6 +2,8 @@ package com.posfiap.controller;
 
 import com.posfiap.security.JwtUtils;
 import com.posfiap.usuario.*;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -19,6 +21,7 @@ public class AuthenticationController {
         this.jwt = jwt;
     }
 
+    // === LOGIN ===
     @MutationMapping
     public AuthPayload login(@Argument("input") LoginInput input) {
         var vReq = ValidateLoginRequest.newBuilder()
@@ -36,7 +39,8 @@ public class AuthenticationController {
         return new AuthPayload(token, u.getUsuarioId(), u.getTipoUsuario().name(), 86400);
     }
 
-    @MutationMapping // Substitui @PostMapping("/register")
+    // === REGISTER ===
+    @MutationMapping
     public RegisterPayload register(@Argument("input") RegisterInput input) {
         var req = CreateUsuarioRequest.newBuilder()
                 .setNome(input.nome())
@@ -47,13 +51,51 @@ public class AuthenticationController {
                 .setTipoUsuario(TipoUsuario.valueOf(input.tipoUsuario().name()))
                 .build();
 
-        var resp = usuarioStub.createUsuario(req);
-        var token = jwt.generateToken(resp.getUsuarioId(), input.email(), input.tipoUsuario().name());
+        try {
+            var resp = usuarioStub.createUsuario(req);
 
-        return new RegisterPayload(resp.getUsuarioId(), resp.getMessage(), token, input.tipoUsuario().name(), 86400);
+            // Caso o microserviço de usuário retorne ID 0 ou mensagem indicando duplicidade:
+            if (resp.getUsuarioId() == 0 ||
+                    resp.getMessage().toLowerCase().contains("já cadastrado")) {
+                return new RegisterPayload(
+                        resp.getUsuarioId(),
+                        resp.getMessage(),
+                        null,   // não gera token
+                        null,
+                        null
+                );
+            }
+
+            // Usuário criado com sucesso → gera token normalmente
+            var token = jwt.generateToken(
+                    resp.getUsuarioId(),
+                    input.email(),
+                    input.tipoUsuario().name()
+            );
+
+            return new RegisterPayload(
+                    resp.getUsuarioId(),
+                    resp.getMessage(),
+                    token,
+                    input.tipoUsuario().name(),
+                    86400
+            );
+
+        } catch (StatusRuntimeException e) {
+            if (e.getStatus().getCode() == Status.ALREADY_EXISTS.getCode()) {
+                return new RegisterPayload(
+                        0L,
+                        e.getStatus().getDescription(),
+                        null,
+                        null,
+                        null
+                );
+            }
+            throw e; // se for outro erro, propaga
+        }
     }
 
-    // === Types ===
+    // === TYPES ===
     public record LoginInput(String email, String senha) {}
     public record AuthPayload(String token, Long usuarioId, String role, Integer expiresIn) {}
     public record RegisterInput(String nome, String cpf, String email, String senha, String telefone, TipoUsuario tipoUsuario) {}
