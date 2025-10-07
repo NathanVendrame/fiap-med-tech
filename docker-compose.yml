@@ -1,7 +1,4 @@
 services:
-  # ----------------------------
-  # Build global (gera todos os .jar)
-  # ----------------------------
   build-all:
     build:
       context: .
@@ -11,9 +8,6 @@ services:
     networks:
       - app-network
 
-  # ----------------------------
-  # Serviço gRPC - Usuário
-  # ----------------------------
   grpc-usuario:
     build:
       context: .
@@ -30,9 +24,6 @@ services:
     networks:
       - app-network
 
-  # ----------------------------
-  # Serviço gRPC - Agendamento
-  # ----------------------------
   grpc-agendamento:
     build:
       context: .
@@ -49,9 +40,6 @@ services:
     networks:
       - app-network
 
-  # ----------------------------
-  # Serviço GraphQL - Aggregator
-  # ----------------------------
   aggregator-service:
     build:
       context: .
@@ -65,8 +53,6 @@ services:
     environment:
       - SPRING_APPLICATION_NAME=aggregator-service
       - SERVER_PORT=8080
-
-      # Variáveis de conexão para os serviços gRPC
       - GRPC_AGENDAMENTO_HOST=grpc-agendamento
       - GRPC_AGENDAMENTO_PORT=6565
       - GRPC_USUARIO_HOST=grpc-usuario
@@ -74,6 +60,87 @@ services:
     networks:
       - app-network
 
+  kafka-producer:
+    build:
+      context: .
+      dockerfile: kafka-producer/Dockerfile
+    container_name: kafka-producer
+    depends_on:
+      - build-all
+      - kafka
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_APPLICATION_NAME: kafka-producer
+      SERVER_PORT: 8082
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+      SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: org.springframework.kafka.support.serializer.JsonSerializer
+      SPRING_KAFKA_PRODUCER_PROPERTIES_SPRING_JSON_ADD_TYPE_HEADERS: "false"
+      SPRING_KAFKA_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES: "*"
+    networks:
+      - app-network
+
+  kafka-consumer:
+    build:
+      context: .
+      dockerfile: kafka-consumer/Dockerfile
+    container_name: kafka-consumer
+    depends_on:
+      - build-all
+      - kafka
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_APPLICATION_NAME: kafka-consumer
+      SERVER_PORT: 8085
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_CONSUMER_GROUP_ID: notification-consumer
+      SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET: earliest
+      SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER: org.apache.kafka.common.serialization.StringDeserializer
+      SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER: org.springframework.kafka.support.serializer.JsonDeserializer
+      SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_USE_TYPE_HEADERS: "false"
+      SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_VALUE_DEFAULT_TYPE: medtech.com.consumer.models.NotificationMessage
+      SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES: medtech.com.consumer.models
+      LOGGING_LEVEL_ORG_APACHE_KAFKA: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_KAFKA: INFO
+    networks:
+      - app-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    user: "0:0"
+    ports:
+      - "29092:29092"
+    environment:
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://127.0.0.1:29092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  kafka-data:
+
+
+
