@@ -8,7 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>com.posfiap</groupId>
@@ -25,7 +25,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <grpc.java.version>1.58.0</grpc.java.version>
+        <grpc.java.version>1.63.0</grpc.java.version>
         <tomcat.annotations.version>6.0.53</tomcat.annotations.version>
         <protoc.version>3.25.1</protoc.version>
         <protobuf.maven.plugin.version>0.6.1</protobuf.maven.plugin.version>
@@ -33,8 +33,17 @@
         <grpc.spring.version>3.1.0.RELEASE</grpc.spring.version>
         <protobuf.java.util.version>3.25.4</protobuf.java.util.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-bom</artifactId>
+                <version>1.63.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <dependency>
                 <groupId>com.posfiap</groupId>
                 <artifactId>proto</artifactId>
@@ -54,11 +63,6 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java-util</artifactId>
                 <version>${protobuf.java.util.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.grpc</groupId>
-                <artifactId>grpc-testing</artifactId>
-                <version>${grpc.java.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
