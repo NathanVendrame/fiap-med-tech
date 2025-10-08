@@ -20,13 +20,13 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @QueryMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public UsuarioDTO getUsuarioById(@Argument Long id) {
         return usuarioService.getUsuarioById(id);
     }
 
     @QueryMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public List<UsuarioDTO> listUsuario() {
         return usuarioService.listUsuario();
     }

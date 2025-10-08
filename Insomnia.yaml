@@ -1,0 +1,366 @@
+type: collection.insomnia.rest/5.0
+name: Scratch Pad
+meta:
+  id: wrk_scratchpad
+  created: 1748991412327
+  modified: 1748991412327
+  description: ""
+collection:
+  - name: Agendamento de Consultas
+    meta:
+      id: fld_bfe57f703f5a40d28d2cfd5b5e79ca46
+      created: 1759869806711
+      modified: 1759869806711
+      sortKey: -1759869806711
+      description: ""
+    children:
+      - url: http://localhost:8080/graphql
+        name: RegisterPaciente
+        meta:
+          id: req_ce46f1b0ce1d40d1a85c01220d36f4f6
+          created: 1759869812982
+          modified: 1759889046099
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815410
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation Register {\n    register(\n        input:
+            {\n            nome: \"Paciente\"\n            email:
+            \"teste@teste.com\"\n            senha: \"123456\"\n            cpf:
+            \"1234\"\n            telefone: \"1234\"\n            tipoUsuario:
+            PACIENTE\n        }\n    )
+            {\n        usuarioId\n        message\n        token\n        role\n        expiresIn\n    }\n}","operationName":"Register"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: login
+        meta:
+          id: req_b8ba330d5e944bc3ad7a0ae2336d1b10
+          created: 1759889071085
+          modified: 1759889078865
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815360
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation Login {\n    login(input: { email:
+            \"medico@teste.com\", senha: \"123456\" })
+            {\n        token\n        usuarioId\n        role\n        expiresIn\n    }\n}","operationName":"Login"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: getUsuarioById
+        meta:
+          id: req_8c114972279a49299d265a8c9aecd2f9
+          created: 1759889105150
+          modified: 1759889114706
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815310
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"query GetUsuarioById {\n    getUsuarioById(id: \"1\")
+            {\n        usuarioId\n        nome\n        cpf\n        email\n        senha\n        telefone\n        tipoUsuario\n    }\n}\n","operationName":"GetUsuarioById"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: listUsuario
+        meta:
+          id: req_04e45214ea6e449f86673a30ab2ec683
+          created: 1759889149325
+          modified: 1759889171898
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815260
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"query GetUsuarioById {\n    getUsuarioById(id: \"1\")
+            {\n        usuarioId\n        nome\n        cpf\n        email\n        senha\n        telefone\n        tipoUsuario\n    }\n}\n","operationName":"GetUsuarioById"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: RegisterMedico
+        meta:
+          id: req_20f6ba5d4baf49d4a4322013f73185a1
+          created: 1759889193111
+          modified: 1759889206280
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815210
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation Register {\n    register(\n        input:
+            {\n            nome: \"Medico\"\n            cpf:
+            \"123456\"\n            email:
+            \"medico@teste.com\"\n            senha:
+            \"123456\"\n            telefone:
+            \"9999999\"\n            tipoUsuario: MEDICO\n        }\n    )
+            {\n        usuarioId\n        message\n        token\n        role\n        expiresIn\n    }\n}","operationName":"Register"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: CrateAgendamento
+        meta:
+          id: req_680609b8ef4345478536279f9dd711ab
+          created: 1759889233577
+          modified: 1759889263439
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815160
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation CreateAgendamento
+            {\n    createAgendamento(\n        agendamento: { pacienteId: \"1\",
+            medicoId: \"2\", dataAgendamento: \"2025-10-07\" }\n    )
+            {\n        agendamentoId\n        message\n    }\n}","operationName":"CreateAgendamento"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWRpY29AdGVzdGUuY29tIiwidWlkIjoyLCJyb2xlIjoiTUVESUNPIiwiaWF0IjoxNzU5ODg5MjE0LCJleHAiOjE3NTk5NzU2MTR9.k-vcTzRkloB3KdeJd3c8Uzmh7H7e-WKs08SN4eWY0Lo
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: getListAgendamentoByMedicoId
+        meta:
+          id: req_9a28504d0a874eeeb1f2d988c072efd2
+          created: 1759889370448
+          modified: 1759889389271
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815110
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"query GetListAgendamentoByMedicoId
+            {\n    getListAgendamentoByMedicoId(medicoId: \"2\")
+            {\n        agendamentoId\n        pacienteId\n        medicoId\n        dataAgendamento\n        agendamentoStatus\n    }\n}","operationName":"GetListAgendamentoByMedicoId"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWRpY29AdGVzdGUuY29tIiwidWlkIjoyLCJyb2xlIjoiTUVESUNPIiwiaWF0IjoxNzU5ODg5MjE0LCJleHAiOjE3NTk5NzU2MTR9.k-vcTzRkloB3KdeJd3c8Uzmh7H7e-WKs08SN4eWY0Lo
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: getListAgendamentoByPacienteId
+        meta:
+          id: req_fc066bf0896d48ac9c6ea163af6f45e4
+          created: 1759889413626
+          modified: 1759889423409
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815060
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"query GetListAgendamentoByPacienteId
+            {\n    getListAgendamentoByPacienteId(pacienteId: \"1\")
+            {\n        agendamentoId\n        pacienteId\n        medicoId\n        dataAgendamento\n        agendamentoStatus\n    }\n}\n","operationName":"GetListAgendamentoByPacienteId"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWRpY29AdGVzdGUuY29tIiwidWlkIjoyLCJyb2xlIjoiTUVESUNPIiwiaWF0IjoxNzU5ODg5MjE0LCJleHAiOjE3NTk5NzU2MTR9.k-vcTzRkloB3KdeJd3c8Uzmh7H7e-WKs08SN4eWY0Lo
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: completeAgendamento
+        meta:
+          id: req_d6e63406bc824aaf8ed51fbbdb9e8c44
+          created: 1759889449450
+          modified: 1759889471732
+          isPrivate: false
+          description: ""
+          sortKey: -1759869815010
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation CompleteAgendamento
+            {\n    completeAgendamento(agendamentoId: \"2\")
+            {\n        message\n    }\n}\n","operationName":"CompleteAgendamento"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWRpY29AdGVzdGUuY29tIiwidWlkIjoyLCJyb2xlIjoiTUVESUNPIiwiaWF0IjoxNzU5ODg5MjE0LCJleHAiOjE3NTk5NzU2MTR9.k-vcTzRkloB3KdeJd3c8Uzmh7H7e-WKs08SN4eWY0Lo
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: cancelAgendamento
+        meta:
+          id: req_6d8ade730f154e6ea446273bdcaa5a50
+          created: 1759889487442
+          modified: 1759889495216
+          isPrivate: false
+          description: ""
+          sortKey: -1759869814960
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation CancelAgendamento
+            {\n    cancelAgendamento(agendamentoId: \"1\")
+            {\n        message\n    }\n}\n","operationName":"CancelAgendamento"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWRpY29AdGVzdGUuY29tIiwidWlkIjoyLCJyb2xlIjoiTUVESUNPIiwiaWF0IjoxNzU5ODg5MjE0LCJleHAiOjE3NTk5NzU2MTR9.k-vcTzRkloB3KdeJd3c8Uzmh7H7e-WKs08SN4eWY0Lo
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/graphql
+        name: updateDataAgendamento
+        meta:
+          id: req_263550181ec24c1e9c95cdac74cdd919
+          created: 1759889818459
+          modified: 1759889831925
+          isPrivate: false
+          description: ""
+          sortKey: -1759869814910
+        method: POST
+        body:
+          mimeType: application/graphql
+          text: '{"query":"mutation UpdateDataAgendamento
+            {\n    updateDataAgendamento(\n        dataAgendamento: {
+            agendamentoId: 1, dataAgendamento: \"2025-10-01\" }\n    )
+            {\n        message\n    }\n}\n\n","operationName":"UpdateDataAgendamento"}'
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtZWRpY29AdGVzdGUuY29tIiwidWlkIjoyLCJyb2xlIjoiTUVESUNPIiwiaWF0IjoxNzU5ODg5MjE0LCJleHAiOjE3NTk5NzU2MTR9.k-vcTzRkloB3KdeJd3c8Uzmh7H7e-WKs08SN4eWY0Lo
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1748991438518
+    modified: 1748991438518
+environments:
+  name: Base Environment
+  meta:
+    id: env_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1748991438334
+    modified: 1748991438334
+    isPrivate: false

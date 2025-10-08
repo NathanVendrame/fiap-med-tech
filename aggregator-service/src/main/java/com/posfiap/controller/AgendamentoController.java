@@ -18,31 +18,31 @@ public class AgendamentoController {
     private final AgendamentoService agendamentoService;
 
     @MutationMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public CreateAgendamentoResponseDTO createAgendamento(@Argument AgendamentoDTO agendamento) {
         return agendamentoService.createAgendamento(agendamento);
     }
 
     @MutationMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public UpdateDataAgendamentoResponseDTO updateDataAgendamento(@Argument AgendamentoDTO dataAgendamento) {
         return agendamentoService.updateDataAgendamento(dataAgendamento);
     }
 
     @MutationMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public CompleteAgendamentoResponseDTO completeAgendamento(@Argument Long agendamentoId) {
         return agendamentoService.completeAgendamento(agendamentoId);
     }
 
     @MutationMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public CancelAgendamentoResponseDTO cancelAgendamento(@Argument Long agendamentoId) {
         return agendamentoService.cancelAgendamento(agendamentoId);
     }
 
     @QueryMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public AgendamentoDTO getAgendamentoById(@Argument Long agendamentoId) {
         return agendamentoService.getAgendamentoById(agendamentoId);
     }
@@ -54,7 +54,7 @@ public class AgendamentoController {
     }
 
     @QueryMapping
-    @PreAuthorize("hasAnyRole('PACIENTE','MEDICO','ENFERMEIRO')")
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     public List<AgendamentoDTO> getListAgendamentoByMedicoId(@Argument Long medicoId) {
         return agendamentoService.getListAgendamentoByMedicoId(medicoId);
     }
