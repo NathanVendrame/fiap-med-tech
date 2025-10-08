@@ -8,9 +8,11 @@ import com.posfiap.usuario.GetUsuarioByIdRequest;
 import com.posfiap.usuario.GetUsuarioByIdResponse;
 import com.posfiap.usuario.TipoUsuario;
 import com.posfiap.usuario.UsuarioServiceGrpc;
+import com.posfiap.utils.DateUtils;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,6 +23,11 @@ public class AgendamentoService {
 
     @GrpcClient("grpc-usuario")
     private UsuarioServiceGrpc.UsuarioServiceBlockingStub usuarioServiceBlockingStub;
+    private final NotificationSender notificationSender;
+
+    public AgendamentoService(NotificationSender notificationSender){
+        this.notificationSender = notificationSender;
+    }
 
     public CreateAgendamentoResponseDTO createAgendamento(AgendamentoDTO agendamentoDTO) {
         UsuarioDTO paciente = getUsuarioById(agendamentoDTO.getPacienteId());
@@ -39,6 +46,15 @@ public class AgendamentoService {
                 .setDataAgendamento(agendamentoDTO.getDataAgendamento())
                 .build();
         CreateAgendamentoResponse response = agendamentoServiceBlockingStub.createAgendamento(request);
+
+        LocalDate data = DateUtils.stringToLocalDate(agendamentoDTO.getDataAgendamento());
+        notificationSender.enviarNotificacao(
+                paciente.getNome(),
+                paciente.getTelefone(),
+                medico.getNome(),
+                data,
+                "CRIADO"
+        );
 
         return new CreateAgendamentoResponseDTO(response.getAgendamentoId(), response.getMessage());
     }

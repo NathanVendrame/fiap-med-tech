@@ -1,8 +1,6 @@
-package com.med.producer.models;
+package com.posfiap.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,21 +11,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @ToString
-public class NotificationMessage {
-
-    @NotBlank
+public class NotificationMessageDTO {
     private String pacienteNome;
-
-    @NotBlank
     private String pacienteTelefone;
-
-    @NotBlank
     private String medicoNome;
 
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate data;
 
-    @NotBlank
     private String agendamentoStatus;
 }
