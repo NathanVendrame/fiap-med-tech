@@ -10,7 +10,7 @@ public class ProducerClientConfig {
 
     @Bean
     public WebClient notificationWebClient(
-            @Value("${producer.base-url:http://localhost:8082}") String baseUrl
+            @Value("${producer.base-url:http://kafka-producer:8082}") String baseUrl
     ) {
         return WebClient.builder()
                 .baseUrl(baseUrl)
